@@ -31,6 +31,7 @@ app.post('/add-restaurant', async function (request, response){
             "avgRating" : request.body.avgRating,
             "costForTwo" : request.body.costForTwo,
             "cuisines" : request.body.cuisines,
+            "imageLink" : request.body.imageLink,
             "name" : request.body.name
     })
     response.status(201).json({
@@ -59,7 +60,29 @@ app.get('/get-restaurant-details', async function(request,response){
     })
 }
 })
-
+app.delete('/delete-restaurant-detail/:id', async function(request, response) {
+    try {
+        const restaurant = await Restaurant.findById(request.params.id)
+        if(restaurant) {
+            await Restaurant.findByIdAndDelete(request.params.id)
+            response.status(200).json({
+                "status" : "success",
+                "message" : "deleted successfully"
+            })
+        } else { //restaurant : null
+            response.status(404).json({
+                "status" : "failure",
+                "message" : "entry not found"
+            })
+        }
+    } catch(error) {
+        response.status(500).json({
+            "status" : "failure",
+            "message" : "could not delete",
+            "error" : error
+        })
+    }
+}) 
 app.post('/create-new-user',async function(request,response){
     try{
           await Users.create({
@@ -70,7 +93,7 @@ app.post('/create-new-user',async function(request,response){
           })
           console.log("user created")
           response.status(201).json({
-            "status" :"succesfully entered"
+            "status" :"succesfully entered user details"
           })
         }
         catch(error){
